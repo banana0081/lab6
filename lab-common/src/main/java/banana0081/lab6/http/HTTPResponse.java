@@ -19,7 +19,9 @@ public class HTTPResponse {
     private Header host = new Header("Host", "localhost:8080");
     private String command = "";
     private String body = "";
-    public HTTPResponse() {}
+
+    public HTTPResponse() {
+    }
 
     public void setContentLength(Header contentLength) {
         this.contentLength = contentLength;
@@ -61,7 +63,10 @@ public class HTTPResponse {
         return host;
     }
 
-    public String getCommand() { return command;}
+    public String getCommand() {
+        return command;
+    }
+
     public void setBody(String body) {
         this.body = body;
         contentLength.setValue(valueOf(body.getBytes(StandardCharsets.UTF_8).length));
@@ -75,21 +80,23 @@ public class HTTPResponse {
     @Override
     public String toString() {
         String request = "";
-        request +=  "HTTP/1.1 " + httpCode + " " + reasonPhrase + '\n';
+        request += "HTTP/1.1 " + httpCode + " " + reasonPhrase + '\n';
         request += host.toString() + '\n';
         request += contentLength.toString() + '\n';
-        if(body.length()>0) {
+        if (body.length() > 0) {
             request += contentType.toString() + '\n';
             request += '\n' + body + '\n';
         }
         return request;
     }
+
     public HumanBeing getHumanBeing() {
         HumanBeing humanBeing = null;
-        try{
+        try {
             XmlMapper xmlMapper = new XmlMapper();
-            humanBeing = xmlMapper.readValue(body, new TypeReference<HumanBeing>() {});
-        } catch(IOException e){
+            humanBeing = xmlMapper.readValue(body, new TypeReference<HumanBeing>() {
+            });
+        } catch (IOException e) {
             printErr(e.getMessage());
         }
         return humanBeing;
@@ -99,6 +106,7 @@ public class HTTPResponse {
         this.httpCode = httpCode;
         this.reasonPhrase = reasonPhrase;
     }
+
     public void pack(HumanBeing humanBeing, int httpCode, String reasonPhrase) {
         this.httpCode = httpCode;
         this.reasonPhrase = reasonPhrase;
@@ -106,12 +114,13 @@ public class HTTPResponse {
         XmlMapper mapper = new XmlMapper();
         try {
             data = mapper.writeValueAsString(humanBeing);
+        } catch (JsonProcessingException ignored) {
         }
-        catch (JsonProcessingException ignored){}
         assert data != null;
         this.setBody(data);
         this.setContentType(new Header("Content-Type", "text/xml"));
     }
+
     public void pack(String[] arg, int httpCode, String reasonPhrase) {
         this.httpCode = httpCode;
         this.reasonPhrase = reasonPhrase;
@@ -119,8 +128,8 @@ public class HTTPResponse {
         XmlMapper mapper = new XmlMapper();
         try {
             data = mapper.writeValueAsString(arg);
+        } catch (JsonProcessingException ignored) {
         }
-        catch (JsonProcessingException ignored){}
         assert data != null;
         this.setBody(data);
         this.setContentType(new Header("Content-Type", "text/xml"));

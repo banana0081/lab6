@@ -24,7 +24,10 @@ public class HTTPRequest implements Serializable {
     private Header host = new Header("Host", "localhost:8080");
     private String command = new String();
     private String body = new String();
-    public HTTPRequest() {}
+
+    public HTTPRequest() {
+    }
+
     public void setMethod(HttpMethod method) {
         method = method;
     }
@@ -61,7 +64,10 @@ public class HTTPRequest implements Serializable {
         this.command = command;
     }
 
-    public String getCommand() { return command;}
+    public String getCommand() {
+        return command;
+    }
+
     public void setBody(String body) {
         this.body = body;
         contentLength.setValue(String.valueOf(body.length()));
@@ -74,39 +80,45 @@ public class HTTPRequest implements Serializable {
     @Override
     public String toString() {
         String request = "";
-        request += method + " /" + command + " HTTP/1.1" +'\n';
+        request += method + " /" + command + " HTTP/1.1" + '\n';
         request += host.toString() + '\n';
-        if(body.length()>0) {
+        if (body.length() > 0) {
             request += contentType.toString() + '\n';
             request += contentLength.toString() + '\n';
             request += '\n' + body + '\n';
         }
         return request;
     }
+
     public HumanBeing getHumanBeing() {
         HumanBeing humanBeing = null;
-        try{
+        try {
             XmlMapper xmlMapper = new XmlMapper();
-            humanBeing = xmlMapper.readValue(body, new TypeReference<HumanBeing>() {});
-        } catch(IOException e){
+            humanBeing = xmlMapper.readValue(body, new TypeReference<HumanBeing>() {
+            });
+        } catch (IOException e) {
             printErr(e.getMessage());
         }
         return humanBeing;
     }
-    public String[] getArguments(){
+
+    public String[] getArguments() {
         String[] args = new String[10];
-        try{
+        try {
             XmlMapper xmlMapper = new XmlMapper();
-            args = xmlMapper.readValue(body, new TypeReference<String[]>() {});
-        } catch(IOException e){
+            args = xmlMapper.readValue(body, new TypeReference<String[]>() {
+            });
+        } catch (IOException e) {
             printErr(e.getMessage());
         }
         return args;
     }
+
     public void pack(String nameCommand, HttpMethod method) {
         this.method = method;
         this.command = nameCommand;
     }
+
     public void pack(String nameCommand, HumanBeing humanBeing, HttpMethod method) {
         this.method = method;
         this.command = nameCommand;
@@ -114,12 +126,13 @@ public class HTTPRequest implements Serializable {
         XmlMapper mapper = new XmlMapper();
         try {
             data = mapper.writeValueAsString(humanBeing);
+        } catch (JsonProcessingException ignored) {
         }
-        catch (JsonProcessingException ignored){}
         assert data != null;
         this.setBody(data);
         this.setContentType(new Header("Content-Type", "text/xml"));
     }
+
     public void pack(String nameCommand, String[] arg, HttpMethod method) {
         this.method = method;
         this.command = nameCommand;
@@ -127,8 +140,8 @@ public class HTTPRequest implements Serializable {
         XmlMapper mapper = new XmlMapper();
         try {
             data = mapper.writeValueAsString(arg);
+        } catch (JsonProcessingException ignored) {
         }
-        catch (JsonProcessingException ignored){}
         assert data != null;
         this.setBody(data);
         this.setContentType(new Header("Content-Type", "text/xml"));
